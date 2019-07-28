@@ -99,8 +99,8 @@ namespace GamemodeManager
 		{
 			if (GamemodeManager.method == GamemodeManager.ChoosingMethod.VOTE && GamemodeManager.methodFreq == GamemodeManager.freqCount && !isRoundRestarting)
 			{
-				instance.Server.Map.Broadcast(30, "<b>Gamemode Voting</b>\nPress [`] or [~] to open your console to vote for the next gamemode!", false);
-				string s = "Type '.gm number' to vote for the gamemode you want to play next!\n";
+				instance.Server.Map.Broadcast(30, "<b>Gamemode Voting</b>\nPress [`] or [~] to open your console to vote for the gamemode for next round!", false);
+				string s = "Type '.gm number' to vote for the gamemode you want to play!\n";
 				for (int i = 1; i <= GamemodeManager.ModeList.Count; i++)
 				{
 					Plugin gm = GamemodeManager.ModeList.ElementAt(i - 1).Key;
