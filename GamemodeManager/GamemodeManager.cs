@@ -39,13 +39,17 @@ namespace GamemodeManager
 			return null;
 		}
 
-		internal static void LoadDefaultConfig()
+		internal static void WriteConfig(string[] data)
 		{
-			if (ConfigFile.ServerConfig.Path != DefaultConfigPath)
-			{
-				ConfigFile.ServerConfig.LoadConfigFile(DefaultConfigPath);
-				ConfigFile.ReloadGameConfig(DefaultConfigPath);
-			}
+			File.WriteAllText(DefaultConfigPath, string.Empty);
+			File.WriteAllLines(DefaultConfigPath, data);
+		}
+
+		internal static void ReloadConfig(string[] data)
+		{
+			WriteConfig(data);
+			ConfigFile.ServerConfig.LoadConfigFile(DefaultConfigPath);
+			ConfigFile.ReloadGameConfig(DefaultConfigPath);
 		}
 
 		internal static void SetupDirectories()
@@ -74,10 +78,12 @@ namespace GamemodeManager
 		internal static Plugin CurrentMode;
 		internal static Plugin NextMode;
 		internal static Plugin LastMode;
+		internal static Plugin LastGamemode;
 		internal static ChoosingMethod method;
 		internal static int methodFreq;
 		internal static int freqCount;
 		internal static string DefaultConfigPath;
+		internal static string[] DefaultConfigData;
 		internal static string ConfigFolderPath = $"{FileManager.GetAppFolder()}GamemodeManager";
 	}
 }

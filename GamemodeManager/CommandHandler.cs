@@ -103,7 +103,7 @@ namespace GamemodeManager
 									GamemodeManager.method = GamemodeManager.ChoosingMethod.NONE;
 									GamemodeManager.SetNextMode(null);
 									GamemodeManager.freqCount = 0;
-									GamemodeManager.LastMode = null;
+									GamemodeManager.LastGamemode = null;
 									break;
 								}
 							case "CYCLE":

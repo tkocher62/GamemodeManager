@@ -1,5 +1,6 @@
 ﻿using Smod2.Attributes;
 using Smod2;
+using System.IO;
 
 namespace GamemodeManager
 {
@@ -20,6 +21,7 @@ namespace GamemodeManager
 		public override void OnEnable()
 		{
 			GamemodeManager.DefaultConfigPath = ConfigFile.ServerConfig.Path;
+			GamemodeManager.DefaultConfigData = File.ReadAllLines(GamemodeManager.DefaultConfigPath);
 		}
 
 		public override void Register()

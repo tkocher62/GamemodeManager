@@ -21,11 +21,23 @@ namespace GamemodeManager
 
 		public EventHandler(Plugin plugin) => instance = plugin;
 
+		public List<int> GetIndexStartingWith(List<string> values, string val)
+		{
+			List<int> indxs = new List<int>();
+			for (int i = 0; i < values.Count; i++)
+			{
+				if (values[i].StartsWith(val)) indxs.Add(i);
+			}
+			return indxs;
+		}
+
 		public void OnRoundRestart(RoundRestartEvent ev)
 		{
 			isRoundRestarting = true;
-			if (GamemodeManager.CurrentMode != null) GamemodeManager.LastMode = GamemodeManager.CurrentMode;
+			if (GamemodeManager.CurrentMode != null) GamemodeManager.LastGamemode = GamemodeManager.CurrentMode;
+			GamemodeManager.LastMode = GamemodeManager.CurrentMode;
 
+			// Determine next mode
 			if (GamemodeManager.method != GamemodeManager.ChoosingMethod.NONE)
 			{
 				if (GamemodeManager.methodFreq == GamemodeManager.freqCount)
@@ -35,27 +47,21 @@ namespace GamemodeManager
 					{
 						case GamemodeManager.ChoosingMethod.CYCLE:
 							{
-								GamemodeManager.SetNextMode(GamemodeManager.GetNextModeInRegistry(GamemodeManager.LastMode));
+								GamemodeManager.SetNextMode(GamemodeManager.GetNextModeInRegistry(GamemodeManager.LastGamemode));
 								break;
 							}
 						case GamemodeManager.ChoosingMethod.SHUFFLE:
 							{
 								Plugin nextMode = GamemodeManager.ModeList.ElementAt(rand.Next(GamemodeManager.ModeList.Count)).Key;
-								GamemodeManager.SetNextMode(GamemodeManager.LastMode == nextMode ? GamemodeManager.GetNextModeInRegistry(GamemodeManager.LastMode) : nextMode);
+								GamemodeManager.SetNextMode(GamemodeManager.LastGamemode == nextMode ? GamemodeManager.GetNextModeInRegistry(GamemodeManager.LastGamemode) : nextMode);
 								break;
 							}
 						case GamemodeManager.ChoosingMethod.VOTE:
 							{
 								isVoting = false;
-
-								if (votelog.Count > 0)
-								{ 
-									GamemodeManager.SetNextMode(GamemodeManager.ModeList.ElementAt(votelog.GroupBy(i => i.Value).OrderByDescending(grp => grp.Count()).Select(grp => grp.Key).First()).Key);
-								}
-								else
-								{
-									GamemodeManager.SetNextMode(GamemodeManager.GetNextModeInRegistry(GamemodeManager.LastMode));
-								}
+								GamemodeManager.SetNextMode(votelog.Count > 0 
+								? GamemodeManager.ModeList.ElementAt(votelog.GroupBy(i => i.Value).OrderByDescending(grp => grp.Count()).Select(grp => grp.Key).First()).Key);
+								: GamemodeManager.GetNextModeInRegistry(GamemodeManager.LastGamemode);
 								break;
 							}
 					}
@@ -76,22 +82,30 @@ namespace GamemodeManager
 					string config = $"{GamemodeManager.ConfigFolderPath}{Path.DirectorySeparatorChar}{instance.Server.Port}{Path.DirectorySeparatorChar}{GamemodeManager.ModeList[GamemodeManager.CurrentMode]}";
 					if (File.Exists(config))
 					{
+						if (GamemodeManager.LastMode != null) GamemodeManager.WriteConfig(GamemodeManager.DefaultConfigData);
+						List<string> newConfig = File.ReadAllLines(GamemodeManager.DefaultConfigPath).ToList();
+						List<string> overrideConfig = File.ReadAllLines(config).ToList();
+						for (int i = 0; i < overrideConfig.Count; i++)
+						{
+							string line = overrideConfig[i];
+							string key = line.Split(':')[0];
+							List<int> indx = GetIndexStartingWith(newConfig, key);
+							if (indx.Count > 0) foreach (int a in indx) newConfig[a] = line;
+							else newConfig.Add(line);
+						}
 						instance.Info($"Loading config '{config}' for gamemode {GamemodeManager.CurrentMode.Details.name}...");
-						ConfigFile.ServerConfig.LoadConfigFile(config);
-						ConfigFile.ReloadGameConfig(config);
-					}
-					else
-					{
-						instance.Info($"Config '{GamemodeManager.ModeList[GamemodeManager.CurrentMode]}' not found, loading default config...");
-						GamemodeManager.LoadDefaultConfig();
+						GamemodeManager.ReloadConfig(newConfig.ToArray());
 					}
 				}
 			}
 			else
 			{
 				GamemodeManager.CurrentMode = null;
-				GamemodeManager.LoadDefaultConfig();
-				instance.Info("Loading default config...");
+				if (GamemodeManager.LastMode != null)
+				{
+					instance.Info("Loading default config...");
+					GamemodeManager.ReloadConfig(GamemodeManager.DefaultConfigData);
+				}
 			}
 		}
 
