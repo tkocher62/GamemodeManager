@@ -60,7 +60,7 @@ namespace GamemodeManager
 				PluginManager.Manager.Logger.Info("cyan.gamemode.manager", $"Config folder {ConfigFolderPath} doesn't exist, creating...");
 				
 			}
-			if (!Directory.Exists($"{ConfigFolderPath}/{PluginManager.Manager.Server.Port}"))
+			if (!isGlobalConfigs && !Directory.Exists($"{ConfigFolderPath}/{PluginManager.Manager.Server.Port}"))
 			{
 				Directory.CreateDirectory($"{ConfigFolderPath}/{PluginManager.Manager.Server.Port}");
 				PluginManager.Manager.Logger.Info("cyan.gamemode.manager", $"Port folder {ConfigFolderPath}/{PluginManager.Manager.Server.Port} doesn't exist, creating...");
@@ -85,5 +85,8 @@ namespace GamemodeManager
 		internal static string DefaultConfigPath;
 		internal static string[] DefaultConfigData;
 		internal static string ConfigFolderPath = $"{FileManager.GetAppFolder()}GamemodeManager";
+
+		// Configs
+		internal static bool isGlobalConfigs;
 	}
 }

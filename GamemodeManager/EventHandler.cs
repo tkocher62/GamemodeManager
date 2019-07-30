@@ -60,8 +60,8 @@ namespace GamemodeManager
 							{
 								isVoting = false;
 								GamemodeManager.SetNextMode(votelog.Count > 0 
-								? GamemodeManager.ModeList.ElementAt(votelog.GroupBy(i => i.Value).OrderByDescending(grp => grp.Count()).Select(grp => grp.Key).First()).Key);
-								: GamemodeManager.GetNextModeInRegistry(GamemodeManager.LastGamemode);
+								? GamemodeManager.ModeList.ElementAt(votelog.GroupBy(i => i.Value).OrderByDescending(grp => grp.Count()).Select(grp => grp.Key).First()).Key
+								: GamemodeManager.GetNextModeInRegistry(GamemodeManager.LastGamemode));
 								break;
 							}
 					}
@@ -79,7 +79,7 @@ namespace GamemodeManager
 				GamemodeManager.NextMode = null;
 				if (GamemodeManager.ModeList[GamemodeManager.CurrentMode] != null)
 				{
-					string config = $"{GamemodeManager.ConfigFolderPath}{Path.DirectorySeparatorChar}{instance.Server.Port}{Path.DirectorySeparatorChar}{GamemodeManager.ModeList[GamemodeManager.CurrentMode]}";
+					string config = $"{GamemodeManager.ConfigFolderPath}{Path.DirectorySeparatorChar}{(!GamemodeManager.isGlobalConfigs ? $"{instance.Server.Port}{Path.DirectorySeparatorChar}" : "")}{GamemodeManager.ModeList[GamemodeManager.CurrentMode]}";
 					if (File.Exists(config))
 					{
 						if (GamemodeManager.LastMode != null) GamemodeManager.WriteConfig(GamemodeManager.DefaultConfigData);
@@ -166,6 +166,8 @@ namespace GamemodeManager
 
 		public void OnWaitingForPlayers(WaitingForPlayersEvent ev)
 		{
+			GamemodeManager.isGlobalConfigs = instance.GetConfigBool("gm_global_gamemode_configs");
+
 			GamemodeManager.SetupDirectories();
 			isRoundRestarting = false;
 		}

@@ -27,6 +27,7 @@ namespace GamemodeManager
 		public override void Register()
 		{
 			AddEventHandlers(new EventHandler(this));
+			AddConfig(new Smod2.Config.ConfigSetting("gm_global_gamemode_configs", true, true, "Should GamemodeManager use gamemode configs in a global file or separate them by port."));
 			AddCommands(new[] {"gamemode", "gm"}, new CommandHandler());
 		}
 	}
