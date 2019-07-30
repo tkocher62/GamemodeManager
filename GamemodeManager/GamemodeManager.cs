@@ -52,6 +52,12 @@ namespace GamemodeManager
 			ConfigFile.ReloadGameConfig(DefaultConfigPath);
 		}
 
+		internal static void ReloadDefaultConfig()
+		{
+			DefaultConfigPath = ConfigFile.ServerConfig.Path;
+			DefaultConfigData = File.ReadAllLines(DefaultConfigPath);
+		}
+
 		internal static void SetupDirectories()
 		{
 			if (!Directory.Exists(ConfigFolderPath))

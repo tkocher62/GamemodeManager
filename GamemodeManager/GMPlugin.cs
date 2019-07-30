@@ -20,8 +20,7 @@ namespace GamemodeManager
 
 		public override void OnEnable()
 		{
-			GamemodeManager.DefaultConfigPath = ConfigFile.ServerConfig.Path;
-			GamemodeManager.DefaultConfigData = File.ReadAllLines(GamemodeManager.DefaultConfigPath);
+			GamemodeManager.ReloadDefaultConfig();
 		}
 
 		public override void Register()

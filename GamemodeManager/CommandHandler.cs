@@ -28,6 +28,7 @@ namespace GamemodeManager
 				"LIST - Lists all registered gamemodes.",
 				"SET [Gamemode ID] - Sets the next gamemode.",
 				"SETMODE [Mode] (FREQ) - Sets the method to choose the next gamemode.",
+				"RELOAD - Reloads the default config data from gameplay_config.txt. Cannot be done during gamemodes.",
 				"",
 				"GamemodeManager Modes",
 				"NONE - Disable automatic gamemode choosing.",
@@ -129,6 +130,18 @@ namespace GamemodeManager
 								}
 						}
 						return new[] { $"Set gamemode method to {cmd}{(freq != 0 ? $" with frequency {freq}" : string.Empty)}." };
+					}
+				case "RELOAD":
+					{
+						if (GamemodeManager.CurrentMode == null)
+						{
+							GamemodeManager.ReloadDefaultConfig();
+							return new[] { "Default config data reloaded." };
+						}
+						else
+						{
+							return new[] { "Cannot reload default config while a gamemode config is laoded." };
+						}
 					}
 				default:
 					{
