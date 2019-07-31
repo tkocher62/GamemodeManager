@@ -83,13 +83,12 @@ namespace GamemodeManager
 					if (File.Exists(config))
 					{
 						if (GamemodeManager.LastMode != null) GamemodeManager.WriteConfig(GamemodeManager.DefaultConfigData);
-						List<string> newConfig = File.ReadAllLines(GamemodeManager.DefaultConfigPath).ToList();
+						List<string> newConfig = GamemodeManager.DefaultConfigData.ToList();
 						List<string> overrideConfig = File.ReadAllLines(config).ToList();
 						for (int i = 0; i < overrideConfig.Count; i++)
 						{
 							string line = overrideConfig[i];
-							string key = line.Split(':')[0];
-							List<int> indx = GetIndexStartingWith(newConfig, key);
+							List<int> indx = GetIndexStartingWith(newConfig, line.Split(':')[0]);
 							if (indx.Count > 0) foreach (int a in indx) newConfig[a] = line;
 							else newConfig.Add(line);
 						}
