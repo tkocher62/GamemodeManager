@@ -28,7 +28,7 @@ namespace GamemodeManager
 				"LIST - Lists all registered gamemodes.",
 				"SET [Gamemode ID] - Sets the next gamemode.",
 				"SETMODE [Mode] (FREQ) - Sets the method to choose the next gamemode.",
-				"RELOAD - Reloads the default config data from gameplay_config.txt. Cannot be done during gamemodes.",
+				"RELOAD - Reloads the default config data for the server from gameplay_config.txt. Cannot be done during gamemodes.",
 				"",
 				"GamemodeManager Modes",
 				"NONE - Disable automatic gamemode choosing.",

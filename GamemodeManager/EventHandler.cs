@@ -118,7 +118,7 @@ namespace GamemodeManager
 				{
 					Plugin gm = GamemodeManager.ModeList.ElementAt(i - 1).Key;
 					s += $"{i}. {gm.Details.name} - By {gm.Details.author}";
-					if (i < GamemodeManager.ModeList.Count - 1) s += "\n";
+					if (i < GamemodeManager.ModeList.Count) s += "\n";
 				}
 				foreach (Player player in ev.Server.GetPlayers())
 				{
