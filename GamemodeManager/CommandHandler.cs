@@ -27,7 +27,7 @@ namespace GamemodeManager
 				"GamemodeManager Commands",
 				"LIST - Lists all registered gamemodes.",
 				"SET [Gamemode ID] - Sets the next gamemode.",
-				"SETMODE [Mode] (FREQ) - Sets the method to choose the next gamemode.",
+				"SETMODE [Mode] (Freq) (RunNext) - Sets the method to choose the next gamemode.",
 				"RELOAD - Reloads the default config data for the server from gameplay_config.txt. Cannot be done during gamemodes.",
 				"",
 				"GamemodeManager Modes",
@@ -79,14 +79,55 @@ namespace GamemodeManager
 					{
 						if (args.Length < 2) return HelpMessage();
 						string cmd = args[1].ToUpper();
+						switch (cmd)
+						{
+							case "NONE":
+								{
+									GamemodeManager.ChangeMode(GamemodeManager.ChoosingMethod.NONE);
+									break;
+								}
+							case "CYCLE":
+								{
+									GamemodeManager.ChangeMode(GamemodeManager.ChoosingMethod.CYCLE);
+									break;
+								}
+							case "SHUFFLE":
+								{
+									GamemodeManager.ChangeMode(GamemodeManager.ChoosingMethod.SHUFFLE);
+									break;
+								}
+							case "VOTE":
+								{
+									GamemodeManager.ChangeMode(GamemodeManager.ChoosingMethod.VOTE);
+									break;
+								}
+							default:
+								{
+									return new[] { $"Unknown gamemode method." };
+								}
+						}
+
 						int freq = 0;
-						if (args.Length == 3)
+						if (args.Length >= 3)
 						{
 							if (int.TryParse(args[2], out int a))
 							{
+								if (args.Length == 4 && GamemodeManager.method != GamemodeManager.ChoosingMethod.NONE)
+								{
+									if (bool.TryParse(args[3].ToLower(), out bool b))
+									{
+										GamemodeManager.SetFrequency(a, b);
+									}
+									else
+									{
+										return new[] { "RunNext must be true or false." };
+									}
+								}
+								else
+								{
+									GamemodeManager.SetFrequency(a);
+								}
 								freq = a;
-								GamemodeManager.methodFreq = a;
-								GamemodeManager.freqCount = a;
 							}
 							else
 							{
@@ -96,38 +137,6 @@ namespace GamemodeManager
 						else
 						{
 							GamemodeManager.methodFreq = 0;
-						}
-						switch (cmd)
-						{
-							case "NONE":
-								{
-									GamemodeManager.method = GamemodeManager.ChoosingMethod.NONE;
-									GamemodeManager.SetNextMode(null);
-									GamemodeManager.freqCount = 0;
-									GamemodeManager.LastGamemode = null;
-									break;
-								}
-							case "CYCLE":
-								{
-									GamemodeManager.method = GamemodeManager.ChoosingMethod.CYCLE;
-									GamemodeManager.ShuffledList = GamemodeManager.ModeList.OrderBy(x => rand.Next()).ToDictionary(item => item.Key, item => item.Value);
-									break;
-								}
-							case "SHUFFLE":
-								{
-									GamemodeManager.method = GamemodeManager.ChoosingMethod.SHUFFLE;
-									break;
-								}
-							case "VOTE":
-								{
-									if (GamemodeManager.ModeList.Count <= 1) return new[] { "There are not enough gamemodes registered to hold a vote." };
-									GamemodeManager.method = GamemodeManager.ChoosingMethod.VOTE;
-									break;
-								}
-							default:
-								{
-									return new[] { $"Unknown gamemode method." };
-								}
 						}
 						return new[] { $"Set gamemode method to {cmd}{(freq != 0 ? $" with frequency {freq}" : string.Empty)}." };
 					}

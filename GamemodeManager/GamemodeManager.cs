@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System;
 
 namespace GamemodeManager
 {
@@ -10,10 +11,12 @@ namespace GamemodeManager
 		public static Dictionary<Plugin, string> ModeList = new Dictionary<Plugin, string>();
 		public static Dictionary<Plugin, string> ShuffledList = new Dictionary<Plugin, string>();
 
+		private static Random rand = new Random();
+
 		public static void RegisterMode(Plugin gamemode, string config = null)
 		{
 			ModeList.Add(gamemode, config);
-			gamemode.Info($"[GamemodeManager] {gamemode.Details.name} ({gamemode.Details.id}) has been registered.");
+			Log($"{gamemode.Details.name} ({gamemode.Details.id}) has been registered.");
 		}
 
 		public static Plugin GetCurrentMode()
@@ -26,7 +29,7 @@ namespace GamemodeManager
 		internal static void SetNextMode(Plugin gamemode)
 		{
 			NextMode = gamemode;
-			gamemode?.Info($"[GamemodeManager] The next gamemode will be {gamemode.Details.name} ({gamemode.Details.id}).");
+			if (gamemode != null) Log($"The next gamemode will be {gamemode.Details.name} ({gamemode.Details.id}).");
 		}
 
 		internal static Plugin GetNextModeInRegistry(Plugin curMode)
@@ -63,13 +66,87 @@ namespace GamemodeManager
 			if (!Directory.Exists(ConfigFolderPath))
 			{
 				Directory.CreateDirectory(ConfigFolderPath);
-				PluginManager.Manager.Logger.Info("cyan.gamemode.manager", $"Config folder {ConfigFolderPath} doesn't exist, creating...");
+				Log($"Config folder {ConfigFolderPath} doesn't exist, creating...");
 				
 			}
 			if (!isGlobalConfigs && !Directory.Exists($"{ConfigFolderPath}/{PluginManager.Manager.Server.Port}"))
 			{
 				Directory.CreateDirectory($"{ConfigFolderPath}/{PluginManager.Manager.Server.Port}");
-				PluginManager.Manager.Logger.Info("cyan.gamemode.manager", $"Port folder {ConfigFolderPath}/{PluginManager.Manager.Server.Port} doesn't exist, creating...");
+				Log($"Port folder {ConfigFolderPath}/{PluginManager.Manager.Server.Port} doesn't exist, creating...");
+			}
+		}
+
+		internal static void Log(string msg)
+		{
+			PluginManager.Manager.Logger.Info("cyan.gamemode.manager", $"[GamemodeManager] {msg}");
+		}
+
+		internal static void ChangeMode(ChoosingMethod mode)
+		{
+			switch (mode)
+			{
+				case ChoosingMethod.NONE:
+					{
+						method = ChoosingMethod.NONE;
+						SetNextMode(null);
+						freqCount = 0;
+						LastGamemode = null;
+						break;
+					}
+				case ChoosingMethod.CYCLE:
+					{
+						method = ChoosingMethod.CYCLE;
+						ShuffledList = ModeList.OrderBy(x => rand.Next()).ToDictionary(item => item.Key, item => item.Value);
+						break;
+					}
+				case ChoosingMethod.SHUFFLE:
+					{
+						method = ChoosingMethod.SHUFFLE;
+						break;
+					}
+				case ChoosingMethod.VOTE:
+					{
+						method = ChoosingMethod.VOTE;
+						break;
+					}
+			}
+		}
+
+		internal static void SetFrequency(int freq, bool runNext = true)
+		{
+			methodFreq = freq;
+			if (runNext) freqCount = freq;
+			else freqCount = 0;
+		}
+
+		internal static void LoadDefaultSettings()
+		{
+			isFirstRound = false;
+			string settings = defaultSettings.ToUpper().Trim();
+			int indx = settings.IndexOf(":");
+			bool isFreq = indx != -1;
+			if (Enum.TryParse(isFreq ? settings.Substring(0, indx) : settings, out ChoosingMethod method))
+			{
+				if (method == ChoosingMethod.NONE) return;
+				ChangeMode(method);
+				Log($"Setting mode to {method}.");
+
+				if (isFreq)
+				{
+					if (int.TryParse(settings.Substring(indx + 1), out int a))
+					{
+						SetFrequency(a, false);
+						Log($"Setting frequency to {a}.");
+					}
+					else
+					{
+						Log("Config error: Invalid frequency, setting to 0.");
+					}
+				}
+			}
+			else
+			{
+				Log("Config error: Invalid method.");
 			}
 		}
 
@@ -91,8 +168,10 @@ namespace GamemodeManager
 		internal static string DefaultConfigPath;
 		internal static string[] DefaultConfigData;
 		internal static string ConfigFolderPath = $"{FileManager.GetAppFolder()}GamemodeManager";
+		internal static bool isFirstRound;
 
 		// Configs
 		internal static bool isGlobalConfigs;
+		internal static string defaultSettings;
 	}
 }

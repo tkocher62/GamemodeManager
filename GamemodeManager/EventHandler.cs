@@ -92,7 +92,7 @@ namespace GamemodeManager
 							if (indx.Count > 0) foreach (int a in indx) newConfig[a] = line;
 							else newConfig.Add(line);
 						}
-						instance.Info($"Loading config '{config}' for gamemode {GamemodeManager.CurrentMode.Details.name}...");
+						GamemodeManager.Log($"Loading config '{config}' for gamemode {GamemodeManager.CurrentMode.Details.name}...");
 						GamemodeManager.ReloadConfig(newConfig.ToArray());
 					}
 				}
@@ -102,7 +102,7 @@ namespace GamemodeManager
 				GamemodeManager.CurrentMode = null;
 				if (GamemodeManager.LastMode != null)
 				{
-					instance.Info("Loading default config...");
+					GamemodeManager.Log("Loading default config...");
 					GamemodeManager.ReloadConfig(GamemodeManager.DefaultConfigData);
 				}
 			}
@@ -166,9 +166,16 @@ namespace GamemodeManager
 		public void OnWaitingForPlayers(WaitingForPlayersEvent ev)
 		{
 			GamemodeManager.isGlobalConfigs = instance.GetConfigBool("gm_global_gamemode_configs");
+			GamemodeManager.defaultSettings = instance.GetConfigString("gm_default_mode");
 
 			GamemodeManager.SetupDirectories();
 			isRoundRestarting = false;
+
+			// Load default settings
+			if (GamemodeManager.isFirstRound && GamemodeManager.defaultSettings != string.Empty)
+			{
+				GamemodeManager.LoadDefaultSettings();
+			}
 		}
 	}
 }

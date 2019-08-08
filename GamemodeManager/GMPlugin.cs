@@ -21,12 +21,14 @@ namespace GamemodeManager
 		public override void OnEnable()
 		{
 			GamemodeManager.ReloadDefaultConfig();
+			GamemodeManager.isFirstRound = true;
 		}
 
 		public override void Register()
 		{
 			AddEventHandlers(new EventHandler(this));
 			AddConfig(new Smod2.Config.ConfigSetting("gm_global_gamemode_configs", true, true, "Should GamemodeManager use gamemode configs in a global file or separate them by port."));
+			AddConfig(new Smod2.Config.ConfigSetting("gm_default_mode", string.Empty, true, "The mode GamemodeManager should be set to on server startup."));
 			AddCommands(new[] {"gamemode", "gm"}, new CommandHandler());
 		}
 	}
