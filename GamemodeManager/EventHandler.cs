@@ -9,7 +9,8 @@ using System.IO;
 
 namespace GamemodeManager
 {
-	class EventHandler : IEventHandlerRoundRestart, IEventHandlerRoundEnd, IEventHandlerCallCommand, IEventHandlerWaitingForPlayers
+	class EventHandler : IEventHandlerRoundRestart, IEventHandlerRoundEnd, IEventHandlerCallCommand, IEventHandlerWaitingForPlayers,
+		IEventHandlerPlayerJoin
 	{
 		private readonly Plugin instance;
 
@@ -175,6 +176,14 @@ namespace GamemodeManager
 			if (GamemodeManager.isFirstRound && GamemodeManager.defaultSettings != string.Empty)
 			{
 				GamemodeManager.LoadDefaultSettings();
+			}
+		}
+
+		public void OnPlayerJoin(PlayerJoinEvent ev)
+		{
+			if (GamemodeManager.method == GamemodeManager.ChoosingMethod.VOTE && GamemodeManager.CurrentMode != null)
+			{
+				ev.Player.PersonalBroadcast(5, $"<b>Winning Gamemode</b>\n{GamemodeManager.CurrentMode.Details.name}\nBy {GamemodeManager.CurrentMode.Details.author}", false);
 			}
 		}
 	}
