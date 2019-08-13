@@ -10,7 +10,7 @@ using System.IO;
 namespace GamemodeManager
 {
 	class EventHandler : IEventHandlerRoundRestart, IEventHandlerRoundEnd, IEventHandlerCallCommand, IEventHandlerWaitingForPlayers,
-		IEventHandlerPlayerJoin
+		IEventHandlerPlayerJoin, IEventHandlerRoundStart
 	{
 		private readonly Plugin instance;
 
@@ -18,6 +18,7 @@ namespace GamemodeManager
 
 		private bool isVoting = false;
 		private bool isRoundRestarting = false;
+		private bool isRoundStarted = false;
 		private Dictionary<int, int> votelog = new Dictionary<int, int>();
 
 		public EventHandler(Plugin plugin) => instance = plugin;
@@ -30,6 +31,11 @@ namespace GamemodeManager
 				if (values[i].StartsWith(val)) indxs.Add(i);
 			}
 			return indxs;
+		}
+
+		public void OnRoundStart(RoundStartEvent ev)
+		{
+			isRoundStarted = true;
 		}
 
 		public void OnRoundRestart(RoundRestartEvent ev)
@@ -127,6 +133,7 @@ namespace GamemodeManager
 				}
 				votelog.Clear();
 				isVoting = true;
+				isRoundStarted = false;
 			}
 		}
 
@@ -181,7 +188,7 @@ namespace GamemodeManager
 
 		public void OnPlayerJoin(PlayerJoinEvent ev)
 		{
-			if (GamemodeManager.method == GamemodeManager.ChoosingMethod.VOTE && GamemodeManager.CurrentMode != null)
+			if (GamemodeManager.method == GamemodeManager.ChoosingMethod.VOTE && GamemodeManager.CurrentMode != null && !isRoundStarted)
 			{
 				ev.Player.PersonalBroadcast(5, $"<b>Winning Gamemode</b>\n{GamemodeManager.CurrentMode.Details.name}\nBy {GamemodeManager.CurrentMode.Details.author}", false);
 			}
