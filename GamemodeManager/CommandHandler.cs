@@ -34,7 +34,8 @@ namespace GamemodeManager
 				"NONE - Disable automatic gamemode choosing.",
 				"CYCLE - Cycles through all gamemodes in order, restarting the order once complete.",
 				"SHUFFLE - Picks a random gamemode every round, gamemodes will not be played twice in a row.",
-				"VOTE - Prompts all players to vote for the next gamemode at the end of the round."
+				"VOTE - Prompts all players to vote for the next gamemode at the end of the round.",
+				"PERSIST - Keeps the current gamemode running until turned off."
 			};
 		}
 
@@ -58,7 +59,7 @@ namespace GamemodeManager
 				case "SET":
 					{
 						if (args.Length != 2) return HelpMessage();
-						if (GamemodeManager.method != GamemodeManager.ChoosingMethod.NONE) return new[] { $"Cannot set next mode while in {GamemodeManager.method.ToString()} mode." };
+						if (GamemodeManager.method != GamemodeManager.ChoosingMethod.NONE && GamemodeManager.method != GamemodeManager.ChoosingMethod.PERSIST) return new[] { $"Cannot set next mode while in {GamemodeManager.method.ToString()} mode." };
 						string id = args[1].ToLower();
 						if (id == "standard")
 						{
@@ -99,6 +100,11 @@ namespace GamemodeManager
 							case "VOTE":
 								{
 									GamemodeManager.ChangeMode(GamemodeManager.ChoosingMethod.VOTE);
+									break;
+								}
+							case "PERSIST":
+								{
+									GamemodeManager.ChangeMode(GamemodeManager.ChoosingMethod.PERSIST);
 									break;
 								}
 							default:

@@ -71,6 +71,14 @@ namespace GamemodeManager
 								: GamemodeManager.GetNextModeInRegistry(GamemodeManager.LastGamemode));
 								break;
 							}
+						case GamemodeManager.ChoosingMethod.PERSIST:
+							{
+								Plugin p= null;
+								if (GamemodeManager.methodFreq != 0) p = GamemodeManager.LastGamemode;
+								else p = GamemodeManager.CurrentMode ?? GamemodeManager.NextMode;
+								if (p != null) GamemodeManager.SetNextMode(p);
+								break;
+							}
 					}
 				}
 				else

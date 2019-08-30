@@ -109,6 +109,11 @@ namespace GamemodeManager
 						method = ChoosingMethod.VOTE;
 						break;
 					}
+				case ChoosingMethod.PERSIST:
+					{
+						method = ChoosingMethod.PERSIST;
+						break;
+					}
 			}
 		}
 
@@ -155,7 +160,8 @@ namespace GamemodeManager
 			NONE,
 			CYCLE,
 			SHUFFLE,
-			VOTE
+			VOTE,
+			PERSIST
 		}
 
 		internal static Plugin CurrentMode;
