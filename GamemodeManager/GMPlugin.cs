@@ -29,6 +29,7 @@ namespace GamemodeManager
 			AddEventHandlers(new EventHandler(this));
 			AddConfig(new Smod2.Config.ConfigSetting("gm_global_gamemode_configs", true, true, "Should GamemodeManager use gamemode configs in a global file or separate them by port."));
 			AddConfig(new Smod2.Config.ConfigSetting("gm_default_mode", string.Empty, true, "The mode GamemodeManager should be set to on server startup."));
+			AddConfig(new Smod2.Config.ConfigSetting("gm_vote_repeat", false, true, "If the Vote mode can repeat gamemodes back to back."));
 			AddCommands(new[] {"gamemode", "gm"}, new CommandHandler());
 		}
 	}

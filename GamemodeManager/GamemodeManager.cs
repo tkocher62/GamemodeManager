@@ -175,6 +175,7 @@ namespace GamemodeManager
 		internal static string[] DefaultConfigData;
 		internal static string ConfigFolderPath = $"{FileManager.GetAppFolder()}GamemodeManager";
 		internal static bool isFirstRound;
+		internal static bool isVoteRepeat;
 
 		// Configs
 		internal static bool isGlobalConfigs;

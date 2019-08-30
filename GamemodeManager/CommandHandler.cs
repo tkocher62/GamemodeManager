@@ -35,7 +35,7 @@ namespace GamemodeManager
 				"CYCLE - Cycles through all gamemodes in order, restarting the order once complete.",
 				"SHUFFLE - Picks a random gamemode every round, gamemodes will not be played twice in a row.",
 				"VOTE - Prompts all players to vote for the next gamemode at the end of the round.",
-				"PERSIST - Keeps the current gamemode running until turned off."
+				"PERSIST - Keeps the current or next gamemode running until turned off."
 			};
 		}
 

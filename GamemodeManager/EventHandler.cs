@@ -23,6 +23,13 @@ namespace GamemodeManager
 
 		public EventHandler(Plugin plugin) => instance = plugin;
 
+		private void LoadConfigs()
+		{
+			GamemodeManager.isGlobalConfigs = instance.GetConfigBool("gm_global_gamemode_configs");
+			GamemodeManager.defaultSettings = instance.GetConfigString("gm_default_mode");
+			GamemodeManager.isVoteRepeat = instance.GetConfigBool("gm_vote_repeat");
+		}
+
 		public List<int> GetIndexStartingWith(List<string> values, string val)
 		{
 			List<int> indxs = new List<int>();
@@ -125,6 +132,8 @@ namespace GamemodeManager
 
 		public void OnRoundEnd(RoundEndEvent ev)
 		{
+			if (GamemodeManager.CurrentMode != null) GamemodeManager.LastGamemode = GamemodeManager.CurrentMode;
+
 			if (GamemodeManager.method == GamemodeManager.ChoosingMethod.VOTE && GamemodeManager.methodFreq == GamemodeManager.freqCount && !isRoundRestarting)
 			{
 				instance.Server.Map.Broadcast(30, "<b>Gamemode Voting</b>\nPress [`] or [~] to open your console to vote for the gamemode for next round!", false);
@@ -132,7 +141,7 @@ namespace GamemodeManager
 				for (int i = 1; i <= GamemodeManager.ModeList.Count; i++)
 				{
 					Plugin gm = GamemodeManager.ModeList.ElementAt(i - 1).Key;
-					s += $"{i}. {gm.Details.name} - By {gm.Details.author}";
+					s += $"{i}. {gm.Details.name} - By {gm.Details.author}{(!GamemodeManager.isVoteRepeat && gm == GamemodeManager.LastGamemode ? " | Unavailable - Last Played" : "")}";
 					if (i < GamemodeManager.ModeList.Count) s += "\n";
 				}
 				foreach (Player player in ev.Server.GetPlayers())
@@ -154,7 +163,18 @@ namespace GamemodeManager
 					string num = ev.Command.Substring(3);
 					if (int.TryParse(num, out int a))
 					{
-						string gmName = GamemodeManager.ModeList.ElementAt(a - 1).Key.Details.name;
+						if (a < 1 || a > GamemodeManager.ModeList.Count)
+						{
+							ev.ReturnMessage = "Invalid option.";
+							return;
+						}
+						Plugin mode = GamemodeManager.ModeList.ElementAt(a - 1).Key;
+						if (!GamemodeManager.isVoteRepeat && mode == GamemodeManager.LastGamemode)
+						{
+							ev.ReturnMessage = "Cannot vote for the last played gamemode.";
+							return;
+						}
+						string gmName = mode.Details.name;
 						if (votelog.ContainsKey(ev.Player.PlayerId))
 						{
 							votelog[ev.Player.PlayerId] = a - 1;
@@ -181,8 +201,7 @@ namespace GamemodeManager
 
 		public void OnWaitingForPlayers(WaitingForPlayersEvent ev)
 		{
-			GamemodeManager.isGlobalConfigs = instance.GetConfigBool("gm_global_gamemode_configs");
-			GamemodeManager.defaultSettings = instance.GetConfigString("gm_default_mode");
+			LoadConfigs();
 
 			GamemodeManager.SetupDirectories();
 			isRoundRestarting = false;
