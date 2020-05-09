@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System;
-using GameCore;
 
 namespace GamemodeManager
 {
@@ -57,7 +56,7 @@ namespace GamemodeManager
 
 		internal static void ReloadDefaultConfig()
 		{
-			DefaultConfigPath = $"{GamemodeManager.PluginConfigFolderPath}{Path.DirectorySeparatorChar}{ServerConsole.Port}-config.yml";
+			DefaultConfigPath = $"{EXILEDConfigFolderPath}{Path.DirectorySeparatorChar}{ServerConsole.Port}-config.yml";
 			DefaultConfigData = File.ReadAllLines(DefaultConfigPath);
 		}
 
@@ -69,10 +68,10 @@ namespace GamemodeManager
 				Log($"Config folder {PluginConfigFolderPath} doesn't exist, creating...");
 				
 			}
-			if (!Configs.isGlobalConfigs && !Directory.Exists($"{PluginConfigFolderPath}/{ServerConsole.Port}"))
+			if (!Configs.isGlobalConfigs && !Directory.Exists($"{PluginConfigFolderPath}{Path.DirectorySeparatorChar}{ServerConsole.Port}"))
 			{
-				Directory.CreateDirectory($"{PluginConfigFolderPath}/{ServerConsole.Port}");
-				Log($"Port folder {PluginConfigFolderPath}/{ServerConsole.Port} doesn't exist, creating...");
+				Directory.CreateDirectory($"{PluginConfigFolderPath}{Path.DirectorySeparatorChar}{ServerConsole.Port}");
+				Log($"Port folder {PluginConfigFolderPath}{Path.DirectorySeparatorChar}{ServerConsole.Port} doesn't exist, creating...");
 			}
 		}
 
