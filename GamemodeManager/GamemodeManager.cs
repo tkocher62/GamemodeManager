@@ -14,7 +14,7 @@ namespace GamemodeManager
 
 		private static Random rand = new Random();
 
-		public static void RegisterMode(EXILED.Plugin gamemode, string config = null)
+		public static void RegisterMode(Plugin gamemode, string config = null)
 		{
 			ModeList.Add(gamemode, config);
 			Log($"{gamemode.getName} has been registered.");
@@ -52,8 +52,7 @@ namespace GamemodeManager
 		internal static void ReloadConfig(string[] data)
 		{
 			WriteConfig(data);
-			ConfigFile.ServerConfig.LoadConfigFile(DefaultConfigPath);
-			ConfigFile.ReloadGameConfigs();
+			Plugin.Config.Reload();
 		}
 
 		internal static void ReloadDefaultConfig()
@@ -177,6 +176,5 @@ namespace GamemodeManager
 		internal static string PluginConfigFolderPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}{Path.DirectorySeparatorChar}Plugins{Path.DirectorySeparatorChar}GamemodeManager";
 		internal static string EXILEDConfigFolderPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}{Path.DirectorySeparatorChar}EXILED";
 		internal static bool isFirstRound;
-		internal static bool isVoteRepeat;
 	}
 }

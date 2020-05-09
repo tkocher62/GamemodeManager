@@ -69,7 +69,7 @@ namespace GamemodeManager
 							}
 						case GamemodeManager.ChoosingMethod.SHUFFLE:
 							{
-								EXILED.Plugin nextMode = GamemodeManager.ModeList.ElementAt(rand.Next(GamemodeManager.ModeList.Count)).Key;
+								Plugin nextMode = GamemodeManager.ModeList.ElementAt(rand.Next(GamemodeManager.ModeList.Count)).Key;
 								GamemodeManager.SetNextMode(GamemodeManager.LastGamemode == nextMode ? GamemodeManager.GetNextModeInRegistry(GamemodeManager.LastGamemode) : nextMode);
 								break;
 							}
@@ -83,7 +83,7 @@ namespace GamemodeManager
 							}
 						case GamemodeManager.ChoosingMethod.PERSIST:
 							{
-								EXILED.Plugin p= null;
+								Plugin p= null;
 								if (GamemodeManager.methodFreq != 0) p = GamemodeManager.LastGamemode;
 								else p = GamemodeManager.CurrentMode ?? GamemodeManager.NextMode;
 								if (p != null) GamemodeManager.SetNextMode(p);
@@ -143,8 +143,8 @@ namespace GamemodeManager
 				string s = "Type '.gm number' to vote for the gamemode you want to play!\n";
 				for (int i = 1; i <= GamemodeManager.ModeList.Count; i++)
 				{
-					EXILED.Plugin gm = GamemodeManager.ModeList.ElementAt(i - 1).Key;
-					s += $"{i}. {gm.getName}{(!GamemodeManager.isVoteRepeat && gm == GamemodeManager.LastGamemode ? " | Unavailable - Last Played" : "")}";
+					Plugin gm = GamemodeManager.ModeList.ElementAt(i - 1).Key;
+					s += $"{i}. {gm.getName}{(!Configs.isVoteRepeat && gm == GamemodeManager.LastGamemode ? " | Unavailable - Last Played" : "")}";
 					if (i < GamemodeManager.ModeList.Count) s += "\n";
 				}
 				foreach (ReferenceHub player in Player.GetHubs())
@@ -171,8 +171,8 @@ namespace GamemodeManager
 							ev.ReturnMessage = "Invalid option.";
 							return;
 						}
-						EXILED.Plugin mode = GamemodeManager.ModeList.ElementAt(a - 1).Key;
-						if (!GamemodeManager.isVoteRepeat && mode == GamemodeManager.LastGamemode)
+						Plugin mode = GamemodeManager.ModeList.ElementAt(a - 1).Key;
+						if (!Configs.isVoteRepeat && mode == GamemodeManager.LastGamemode)
 						{
 							ev.ReturnMessage = "Cannot vote for the last played gamemode.";
 							return;
