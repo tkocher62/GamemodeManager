@@ -14,7 +14,7 @@ namespace GamemodeManager
 
 		private static Random rand = new Random();
 
-		public static void RegisterMode(Plugin gamemode, string config = null)
+		public static void RegisterMode(EXILED.Plugin gamemode, string config = null)
 		{
 			ModeList.Add(gamemode, config);
 			Log($"{gamemode.getName} has been registered.");
@@ -58,22 +58,22 @@ namespace GamemodeManager
 
 		internal static void ReloadDefaultConfig()
 		{
-			DefaultConfigPath = ConfigFile.ServerConfig.Path;
+			DefaultConfigPath = $"{GamemodeManager.PluginConfigFolderPath}{Path.DirectorySeparatorChar}{ServerConsole.Port}-config.yml";
 			DefaultConfigData = File.ReadAllLines(DefaultConfigPath);
 		}
 
 		internal static void SetupDirectories()
 		{
-			if (!Directory.Exists(ConfigFolderPath))
+			if (!Directory.Exists(PluginConfigFolderPath))
 			{
-				Directory.CreateDirectory(ConfigFolderPath);
-				Log($"Config folder {ConfigFolderPath} doesn't exist, creating...");
+				Directory.CreateDirectory(PluginConfigFolderPath);
+				Log($"Config folder {PluginConfigFolderPath} doesn't exist, creating...");
 				
 			}
-			if (!isGlobalConfigs && !Directory.Exists($"{ConfigFolderPath}/{ServerConsole.Port}"))
+			if (!Configs.isGlobalConfigs && !Directory.Exists($"{PluginConfigFolderPath}/{ServerConsole.Port}"))
 			{
-				Directory.CreateDirectory($"{ConfigFolderPath}/{ServerConsole.Port}");
-				Log($"Port folder {ConfigFolderPath}/{ServerConsole.Port} doesn't exist, creating...");
+				Directory.CreateDirectory($"{PluginConfigFolderPath}/{ServerConsole.Port}");
+				Log($"Port folder {PluginConfigFolderPath}/{ServerConsole.Port} doesn't exist, creating...");
 			}
 		}
 
@@ -128,7 +128,7 @@ namespace GamemodeManager
 		internal static void LoadDefaultSettings()
 		{
 			isFirstRound = false;
-			string settings = defaultSettings.ToUpper().Trim();
+			string settings = Configs.defaultMode.ToUpper().Trim();
 			int indx = settings.IndexOf(":");
 			bool isFreq = indx != -1;
 			if (Enum.TryParse(isFreq ? settings.Substring(0, indx) : settings, out ChoosingMethod method))
@@ -174,12 +174,9 @@ namespace GamemodeManager
 		internal static int freqCount;
 		internal static string DefaultConfigPath;
 		internal static string[] DefaultConfigData;
-		internal static string ConfigFolderPath = $"{FileManager.GetAppFolder()}GamemodeManager";
+		internal static string PluginConfigFolderPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}{Path.DirectorySeparatorChar}Plugins{Path.DirectorySeparatorChar}GamemodeManager";
+		internal static string EXILEDConfigFolderPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}{Path.DirectorySeparatorChar}EXILED";
 		internal static bool isFirstRound;
 		internal static bool isVoteRepeat;
-
-		// Configs
-		internal static bool isGlobalConfigs;
-		internal static string defaultSettings;
 	}
 }

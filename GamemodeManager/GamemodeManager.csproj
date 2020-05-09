@@ -68,7 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configs.cs" />
-    <Compile Include="CommandHandler.cs" />
     <Compile Include="EventHandler.cs" />
     <Compile Include="GamemodeManager.cs" />
     <Compile Include="GMPlugin.cs" />

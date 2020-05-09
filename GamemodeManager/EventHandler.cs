@@ -9,12 +9,29 @@ namespace GamemodeManager
 {
 	class EventHandler
 	{
+		// TODO:
+		// Reload EXILED config instead of main game config
+		// Ensure config swapping works as intended (briefly touched this, not fully done or checked over)
+
 		private Random rand = new Random();
 
 		private bool isVoting = false;
 		private bool isRoundRestarting = false;
 		private bool isRoundStarted = false;
 		private Dictionary<ReferenceHub, int> votelog = new Dictionary<ReferenceHub, int>();
+
+		private string helpMessage = 
+				"GamemodeManager Commands\n" +
+				"LIST - Lists all registered gamemodes.\n" +
+				"SET [Gamemode ID] - Sets the next gamemode.\n" +
+				"SETMODE [Mode] (Freq) (RunNext) - Sets the method to choose the next gamemode.\n" +
+				"RELOAD - Reloads the default config data for the server from gameplay_config.txt. Cannot be done during gamemodes.\n\n" +
+				"GamemodeManager Modes\n" +
+				"NONE - Disable automatic gamemode choosing.\n" +
+				"CYCLE - Cycles through all gamemodes in order, restarting the order once complete.\n" +
+				"SHUFFLE - Picks a random gamemode every round, gamemodes will not be played twice in a row.\n" +
+				"VOTE - Prompts all players to vote for the next gamemode at the end of the round.\n" +
+				"PERSIST - Keeps the current or next gamemode running until turned off.";
 
 		public List<int> GetIndexStartingWith(List<string> values, string val)
 		{
@@ -52,7 +69,7 @@ namespace GamemodeManager
 							}
 						case GamemodeManager.ChoosingMethod.SHUFFLE:
 							{
-								Plugin nextMode = GamemodeManager.ModeList.ElementAt(rand.Next(GamemodeManager.ModeList.Count)).Key;
+								EXILED.Plugin nextMode = GamemodeManager.ModeList.ElementAt(rand.Next(GamemodeManager.ModeList.Count)).Key;
 								GamemodeManager.SetNextMode(GamemodeManager.LastGamemode == nextMode ? GamemodeManager.GetNextModeInRegistry(GamemodeManager.LastGamemode) : nextMode);
 								break;
 							}
@@ -66,7 +83,7 @@ namespace GamemodeManager
 							}
 						case GamemodeManager.ChoosingMethod.PERSIST:
 							{
-								Plugin p= null;
+								EXILED.Plugin p= null;
 								if (GamemodeManager.methodFreq != 0) p = GamemodeManager.LastGamemode;
 								else p = GamemodeManager.CurrentMode ?? GamemodeManager.NextMode;
 								if (p != null) GamemodeManager.SetNextMode(p);
@@ -87,7 +104,7 @@ namespace GamemodeManager
 				GamemodeManager.NextMode = null;
 				if (GamemodeManager.ModeList[GamemodeManager.CurrentMode] != null)
 				{
-					string config = $"{GamemodeManager.ConfigFolderPath}{Path.DirectorySeparatorChar}{(!GamemodeManager.isGlobalConfigs ? $"{ServerConsole.Port}{Path.DirectorySeparatorChar}" : "")}{GamemodeManager.ModeList[GamemodeManager.CurrentMode]}";
+					string config = $"{GamemodeManager.PluginConfigFolderPath}{Path.DirectorySeparatorChar}{(!Configs.isGlobalConfigs ? $"{ServerConsole.Port}{Path.DirectorySeparatorChar}" : "")}{GamemodeManager.ModeList[GamemodeManager.CurrentMode]}";
 					if (File.Exists(config))
 					{
 						if (GamemodeManager.LastMode != null) GamemodeManager.WriteConfig(GamemodeManager.DefaultConfigData);
@@ -126,7 +143,7 @@ namespace GamemodeManager
 				string s = "Type '.gm number' to vote for the gamemode you want to play!\n";
 				for (int i = 1; i <= GamemodeManager.ModeList.Count; i++)
 				{
-					Plugin gm = GamemodeManager.ModeList.ElementAt(i - 1).Key;
+					EXILED.Plugin gm = GamemodeManager.ModeList.ElementAt(i - 1).Key;
 					s += $"{i}. {gm.getName}{(!GamemodeManager.isVoteRepeat && gm == GamemodeManager.LastGamemode ? " | Unavailable - Last Played" : "")}";
 					if (i < GamemodeManager.ModeList.Count) s += "\n";
 				}
@@ -154,7 +171,7 @@ namespace GamemodeManager
 							ev.ReturnMessage = "Invalid option.";
 							return;
 						}
-						Plugin mode = GamemodeManager.ModeList.ElementAt(a - 1).Key;
+						EXILED.Plugin mode = GamemodeManager.ModeList.ElementAt(a - 1).Key;
 						if (!GamemodeManager.isVoteRepeat && mode == GamemodeManager.LastGamemode)
 						{
 							ev.ReturnMessage = "Cannot vote for the last played gamemode.";
@@ -193,7 +210,7 @@ namespace GamemodeManager
 			isRoundRestarting = false;
 
 			// Load default settings
-			if (GamemodeManager.isFirstRound && GamemodeManager.defaultSettings != string.Empty)
+			if (GamemodeManager.isFirstRound && Configs.defaultMode != string.Empty)
 			{
 				GamemodeManager.LoadDefaultSettings();
 			}
@@ -204,6 +221,166 @@ namespace GamemodeManager
 			if (GamemodeManager.method == GamemodeManager.ChoosingMethod.VOTE && GamemodeManager.CurrentMode != null && !isRoundStarted)
 			{
 				ev.Player.BroadcastMessage($"<b>Winning Gamemode</b>\n{GamemodeManager.CurrentMode.getName}", 5);
+			}
+		}
+
+		public void OnRACommand(ref RACommandEvent ev)
+		{
+			string cmd = ev.Command.ToLower();
+			if (cmd.StartsWith("gm"))
+			{
+				ev.Allow = false;
+				//ReferenceHub sender = Player.GetPlayer(ev.Sender.SenderId);
+				string[] args = cmd.Replace("gm", "").Split(' ');
+				if (args.Length == 0 || args == null)
+				{
+					ev.Sender.RAMessage(helpMessage, false);
+					return;
+				}
+
+				switch (args[0].ToUpper())
+				{
+					case "LIST":
+						{
+							string s = "Registered Gamemodes:\n - Standard (standard)\n";
+							for (int i = 0; i < GamemodeManager.ModeList.Count; i++)
+							{
+								Plugin gm = GamemodeManager.ModeList.ElementAt(i).Key;
+								s += $" - {gm.getName}";
+								if (i < GamemodeManager.ModeList.Count - 1) s += "\n";
+							}
+							ev.Sender.RAMessage(s, true);
+							break;
+						}
+					case "SET":
+						{
+							if (args.Length != 2)
+							{
+								ev.Sender.RAMessage(helpMessage, false);
+								return;
+							}
+							if (GamemodeManager.method != GamemodeManager.ChoosingMethod.NONE && GamemodeManager.method != GamemodeManager.ChoosingMethod.PERSIST)
+							{
+								ev.Sender.RAMessage($"Cannot set next mode while in {GamemodeManager.method.ToString()} mode.", false);
+								return;
+							}
+							string id = args[1].ToLower();
+							if (id == "standard")
+							{
+								GamemodeManager.SetNextMode(null);
+								ev.Sender.RAMessage("Set next gamemode to Standard.", true);
+								return;
+							}
+							foreach (KeyValuePair<Plugin, string> entry in GamemodeManager.ModeList)
+							{
+								if (entry.Key.getName.ToLower() == id)
+								{
+									GamemodeManager.SetNextMode(entry.Key);
+									ev.Sender.RAMessage($"Set next gamemode to {entry.Key.getName}.", true);
+									return;
+								}
+							}
+							ev.Sender.RAMessage($"Unknown gamemode {id}.", true);
+							break;
+						}
+					case "SETMODE":
+						{
+							if (args.Length < 2)
+							{
+								ev.Sender.RAMessage(helpMessage, false);
+								return;
+							}
+							string cmd2 = args[1].ToUpper();
+							switch (cmd2)
+							{
+								case "NONE":
+									{
+										GamemodeManager.ChangeMode(GamemodeManager.ChoosingMethod.NONE);
+										break;
+									}
+								case "CYCLE":
+									{
+										GamemodeManager.ChangeMode(GamemodeManager.ChoosingMethod.CYCLE);
+										break;
+									}
+								case "SHUFFLE":
+									{
+										GamemodeManager.ChangeMode(GamemodeManager.ChoosingMethod.SHUFFLE);
+										break;
+									}
+								case "VOTE":
+									{
+										GamemodeManager.ChangeMode(GamemodeManager.ChoosingMethod.VOTE);
+										break;
+									}
+								case "PERSIST":
+									{
+										GamemodeManager.ChangeMode(GamemodeManager.ChoosingMethod.PERSIST);
+										break;
+									}
+								default:
+									{
+										ev.Sender.RAMessage("Unknown gamemode method.", false);
+										break;
+									}
+							}
+
+							int freq = 0;
+							if (args.Length >= 3)
+							{
+								if (int.TryParse(args[2], out int a))
+								{
+									if (args.Length == 4 && GamemodeManager.method != GamemodeManager.ChoosingMethod.NONE)
+									{
+										if (bool.TryParse(args[3].ToLower(), out bool b))
+										{
+											GamemodeManager.SetFrequency(a, b);
+										}
+										else
+										{
+											ev.Sender.RAMessage("RunNext must be true or false.", false);
+											return;
+										}
+									}
+									else
+									{
+										GamemodeManager.SetFrequency(a);
+									}
+									freq = a;
+								}
+								else
+								{
+									ev.Sender.RAMessage("Invalid frequency", false);
+									return;
+								}
+							}
+							else
+							{
+								GamemodeManager.methodFreq = 0;
+							}
+							ev.Sender.RAMessage($"Set gamemode method to {cmd}{(freq != 0 ? $" with frequency {freq}" : string.Empty)}.", true);
+							break;
+						}
+					case "RELOAD":
+						{
+							if (GamemodeManager.CurrentMode == null)
+							{
+								GamemodeManager.ReloadDefaultConfig();
+								ev.Sender.RAMessage("Default config data reloaded.", true);
+								return;
+							}
+							else
+							{
+								ev.Sender.RAMessage("Cannot reload default config while a gamemode config is loaded.", false);
+								return;
+							}
+						}
+					default:
+						{
+							ev.Sender.RAMessage(helpMessage, false);
+							break;
+						}
+				}
 			}
 		}
 	}
