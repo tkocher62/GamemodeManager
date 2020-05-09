@@ -1,8 +1,9 @@
-﻿using Smod2;
+﻿using EXILED;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System;
+using GameCore;
 
 namespace GamemodeManager
 {
@@ -16,7 +17,7 @@ namespace GamemodeManager
 		public static void RegisterMode(Plugin gamemode, string config = null)
 		{
 			ModeList.Add(gamemode, config);
-			Log($"{gamemode.Details.name} ({gamemode.Details.id}) has been registered.");
+			Log($"{gamemode.getName} has been registered.");
 		}
 
 		public static Plugin GetCurrentMode()
@@ -29,7 +30,7 @@ namespace GamemodeManager
 		internal static void SetNextMode(Plugin gamemode)
 		{
 			NextMode = gamemode;
-			if (gamemode != null) Log($"The next gamemode will be {gamemode.Details.name} ({gamemode.Details.id}).");
+			if (gamemode != null) Log($"The next gamemode will be {gamemode.getName} ({gamemode.getName}).");
 		}
 
 		internal static Plugin GetNextModeInRegistry(Plugin curMode)
@@ -52,7 +53,7 @@ namespace GamemodeManager
 		{
 			WriteConfig(data);
 			ConfigFile.ServerConfig.LoadConfigFile(DefaultConfigPath);
-			ConfigFile.ReloadGameConfig(DefaultConfigPath);
+			ConfigFile.ReloadGameConfigs();
 		}
 
 		internal static void ReloadDefaultConfig()
@@ -69,16 +70,16 @@ namespace GamemodeManager
 				Log($"Config folder {ConfigFolderPath} doesn't exist, creating...");
 				
 			}
-			if (!isGlobalConfigs && !Directory.Exists($"{ConfigFolderPath}/{PluginManager.Manager.Server.Port}"))
+			if (!isGlobalConfigs && !Directory.Exists($"{ConfigFolderPath}/{ServerConsole.Port}"))
 			{
-				Directory.CreateDirectory($"{ConfigFolderPath}/{PluginManager.Manager.Server.Port}");
-				Log($"Port folder {ConfigFolderPath}/{PluginManager.Manager.Server.Port} doesn't exist, creating...");
+				Directory.CreateDirectory($"{ConfigFolderPath}/{ServerConsole.Port}");
+				Log($"Port folder {ConfigFolderPath}/{ServerConsole.Port} doesn't exist, creating...");
 			}
 		}
 
 		internal static void Log(string msg)
 		{
-			PluginManager.Manager.Logger.Info("cyan.gamemode.manager", $"[GamemodeManager] {msg}");
+			EXILED.Log.Info($"[GamemodeManager] {msg}");
 		}
 
 		internal static void ChangeMode(ChoosingMethod mode)

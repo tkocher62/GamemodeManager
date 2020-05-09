@@ -1,34 +1,20 @@
-﻿using Smod2;
-using Smod2.EventHandlers;
-using Smod2.Events;
+﻿using EXILED;
 using System;
-using Smod2.API;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using EXILED.Extensions;
 
 namespace GamemodeManager
 {
-	class EventHandler : IEventHandlerRoundRestart, IEventHandlerRoundEnd, IEventHandlerCallCommand, IEventHandlerWaitingForPlayers,
-		IEventHandlerPlayerJoin, IEventHandlerRoundStart
+	class EventHandler
 	{
-		private readonly Plugin instance;
-
 		private Random rand = new Random();
 
 		private bool isVoting = false;
 		private bool isRoundRestarting = false;
 		private bool isRoundStarted = false;
-		private Dictionary<int, int> votelog = new Dictionary<int, int>();
-
-		public EventHandler(Plugin plugin) => instance = plugin;
-
-		private void LoadConfigs()
-		{
-			GamemodeManager.isGlobalConfigs = instance.GetConfigBool("gm_global_gamemode_configs");
-			GamemodeManager.defaultSettings = instance.GetConfigString("gm_default_mode");
-			GamemodeManager.isVoteRepeat = instance.GetConfigBool("gm_vote_repeat");
-		}
+		private Dictionary<ReferenceHub, int> votelog = new Dictionary<ReferenceHub, int>();
 
 		public List<int> GetIndexStartingWith(List<string> values, string val)
 		{
@@ -40,12 +26,12 @@ namespace GamemodeManager
 			return indxs;
 		}
 
-		public void OnRoundStart(RoundStartEvent ev)
+		public void OnRoundStart()
 		{
 			isRoundStarted = true;
 		}
 
-		public void OnRoundRestart(RoundRestartEvent ev)
+		public void OnRoundRestart()
 		{
 			isRoundRestarting = true;
 			if (GamemodeManager.CurrentMode != null) GamemodeManager.LastGamemode = GamemodeManager.CurrentMode;
@@ -101,7 +87,7 @@ namespace GamemodeManager
 				GamemodeManager.NextMode = null;
 				if (GamemodeManager.ModeList[GamemodeManager.CurrentMode] != null)
 				{
-					string config = $"{GamemodeManager.ConfigFolderPath}{Path.DirectorySeparatorChar}{(!GamemodeManager.isGlobalConfigs ? $"{instance.Server.Port}{Path.DirectorySeparatorChar}" : "")}{GamemodeManager.ModeList[GamemodeManager.CurrentMode]}";
+					string config = $"{GamemodeManager.ConfigFolderPath}{Path.DirectorySeparatorChar}{(!GamemodeManager.isGlobalConfigs ? $"{ServerConsole.Port}{Path.DirectorySeparatorChar}" : "")}{GamemodeManager.ModeList[GamemodeManager.CurrentMode]}";
 					if (File.Exists(config))
 					{
 						if (GamemodeManager.LastMode != null) GamemodeManager.WriteConfig(GamemodeManager.DefaultConfigData);
@@ -114,7 +100,7 @@ namespace GamemodeManager
 							if (indx.Count > 0) foreach (int a in indx) newConfig[a] = line;
 							else newConfig.Add(line);
 						}
-						GamemodeManager.Log($"Loading config '{config}' for gamemode {GamemodeManager.CurrentMode.Details.name}...");
+						GamemodeManager.Log($"Loading config '{config}' for gamemode {GamemodeManager.CurrentMode.getName}...");
 						GamemodeManager.ReloadConfig(newConfig.ToArray());
 					}
 				}
@@ -130,21 +116,21 @@ namespace GamemodeManager
 			}
 		}
 
-		public void OnRoundEnd(RoundEndEvent ev)
+		public void OnRoundEnd()
 		{
 			if (GamemodeManager.CurrentMode != null) GamemodeManager.LastGamemode = GamemodeManager.CurrentMode;
 
 			if (GamemodeManager.method == GamemodeManager.ChoosingMethod.VOTE && GamemodeManager.methodFreq == GamemodeManager.freqCount && !isRoundRestarting)
 			{
-				instance.Server.Map.Broadcast(30, "<b>Gamemode Voting</b>\nPress [`] or [~] to open your console to vote for the gamemode for next round!", false);
+				Map.Broadcast("<b>Gamemode Voting</b>\nPress [`] or [~] to open your console to vote for the gamemode for next round!", 30, false);
 				string s = "Type '.gm number' to vote for the gamemode you want to play!\n";
 				for (int i = 1; i <= GamemodeManager.ModeList.Count; i++)
 				{
 					Plugin gm = GamemodeManager.ModeList.ElementAt(i - 1).Key;
-					s += $"{i}. {gm.Details.name} - By {gm.Details.author}{(!GamemodeManager.isVoteRepeat && gm == GamemodeManager.LastGamemode ? " | Unavailable - Last Played" : "")}";
+					s += $"{i}. {gm.getName}{(!GamemodeManager.isVoteRepeat && gm == GamemodeManager.LastGamemode ? " | Unavailable - Last Played" : "")}";
 					if (i < GamemodeManager.ModeList.Count) s += "\n";
 				}
-				foreach (Player player in ev.Server.GetPlayers())
+				foreach (ReferenceHub player in Player.GetHubs())
 				{
 					player.SendConsoleMessage(s, "yellow");
 				}
@@ -154,7 +140,7 @@ namespace GamemodeManager
 			}
 		}
 
-		public void OnCallCommand(PlayerCallCommandEvent ev)
+		public void OnConsoleCommand(ConsoleCommandEvent ev)
 		{
 			if (ev.Command.StartsWith("gm"))
 			{
@@ -174,15 +160,15 @@ namespace GamemodeManager
 							ev.ReturnMessage = "Cannot vote for the last played gamemode.";
 							return;
 						}
-						string gmName = mode.Details.name;
-						if (votelog.ContainsKey(ev.Player.PlayerId))
+						string gmName = mode.getName;
+						if (votelog.ContainsKey(ev.Player))
 						{
-							votelog[ev.Player.PlayerId] = a - 1;
+							votelog[ev.Player] = a - 1;
 							ev.ReturnMessage = $"You have changed your vote to {gmName}.";
 						}
 						else
 						{
-							votelog.Add(ev.Player.PlayerId, a - 1);
+							votelog.Add(ev.Player, a - 1);
 							ev.ReturnMessage = $"Vote casted for {gmName}.";
 						}
 					}
@@ -199,9 +185,9 @@ namespace GamemodeManager
 			}
 		}
 
-		public void OnWaitingForPlayers(WaitingForPlayersEvent ev)
+		public void OnWaitingForPlayers()
 		{
-			LoadConfigs();
+			Configs.Reload();
 
 			GamemodeManager.SetupDirectories();
 			isRoundRestarting = false;
@@ -217,7 +203,7 @@ namespace GamemodeManager
 		{
 			if (GamemodeManager.method == GamemodeManager.ChoosingMethod.VOTE && GamemodeManager.CurrentMode != null && !isRoundStarted)
 			{
-				ev.Player.PersonalBroadcast(5, $"<b>Winning Gamemode</b>\n{GamemodeManager.CurrentMode.Details.name}\nBy {GamemodeManager.CurrentMode.Details.author}", false);
+				ev.Player.BroadcastMessage($"<b>Winning Gamemode</b>\n{GamemodeManager.CurrentMode.getName}", 5);
 			}
 		}
 	}
