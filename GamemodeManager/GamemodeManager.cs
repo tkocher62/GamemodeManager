@@ -29,7 +29,7 @@ namespace GamemodeManager
 		internal static void SetNextMode(Plugin gamemode)
 		{
 			NextMode = gamemode;
-			if (gamemode != null) Log($"The next gamemode will be {gamemode.getName} ({gamemode.getName}).");
+			if (gamemode != null) Log($"The next gamemode will be {gamemode.getName}.");
 		}
 
 		internal static Plugin GetNextModeInRegistry(Plugin curMode)
