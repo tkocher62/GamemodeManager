@@ -228,13 +228,11 @@ namespace GamemodeManager
 				ev.Allow = false;
 				//ReferenceHub sender = Player.GetPlayer(ev.Sender.SenderId);
 				string[] args = cmd.Replace("gm", "").Trim().Split(' ');
-				Log.Warn(args.Length.ToString());
 				if (args.Length == 0 || args == null)
 				{
 					ev.Sender.RAMessage(helpMessage, false);
 					return;
 				}
-				Log.Warn(args[0]);
 				switch (args[0].ToUpper())
 				{
 					case "LIST":
