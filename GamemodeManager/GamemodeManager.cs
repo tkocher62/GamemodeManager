@@ -16,7 +16,7 @@ namespace GamemodeManager
 		public static void RegisterMode(Plugin gamemode, string config = null)
 		{
 			ModeList.Add(gamemode, config);
-			Log($"{gamemode.getName} has been registered.");
+			Log.Info($"{gamemode.getName} has been registered.");
 		}
 
 		public static Plugin GetCurrentMode()
@@ -29,7 +29,7 @@ namespace GamemodeManager
 		internal static void SetNextMode(Plugin gamemode)
 		{
 			NextMode = gamemode;
-			if (gamemode != null) Log($"The next gamemode will be {gamemode.getName}.");
+			if (gamemode != null) Log.Info($"The next gamemode will be {gamemode.getName}.");
 		}
 
 		internal static Plugin GetNextModeInRegistry(Plugin curMode)
@@ -65,19 +65,14 @@ namespace GamemodeManager
 			if (!Directory.Exists(PluginConfigFolderPath))
 			{
 				Directory.CreateDirectory(PluginConfigFolderPath);
-				Log($"Config folder {PluginConfigFolderPath} doesn't exist, creating...");
+				Log.Info($"Config folder {PluginConfigFolderPath} doesn't exist, creating...");
 				
 			}
 			if (!Configs.isGlobalConfigs && !Directory.Exists($"{PluginConfigFolderPath}{Path.DirectorySeparatorChar}{ServerConsole.Port}"))
 			{
 				Directory.CreateDirectory($"{PluginConfigFolderPath}{Path.DirectorySeparatorChar}{ServerConsole.Port}");
-				Log($"Port folder {PluginConfigFolderPath}{Path.DirectorySeparatorChar}{ServerConsole.Port} doesn't exist, creating...");
+				Log.Info($"Port folder {PluginConfigFolderPath}{Path.DirectorySeparatorChar}{ServerConsole.Port} doesn't exist, creating...");
 			}
-		}
-
-		internal static void Log(string msg)
-		{
-			EXILED.Log.Info($"[GamemodeManager] {msg}");
 		}
 
 		internal static void ChangeMode(ChoosingMethod mode)
@@ -133,24 +128,24 @@ namespace GamemodeManager
 			{
 				if (method == ChoosingMethod.NONE) return;
 				ChangeMode(method);
-				Log($"Setting mode to {method}.");
+				Log.Info($"Setting mode to {method}.");
 
 				if (isFreq)
 				{
 					if (int.TryParse(settings.Substring(indx + 1), out int a))
 					{
 						SetFrequency(a, false);
-						Log($"Setting frequency to {a}.");
+						Log.Info($"Setting frequency to {a}.");
 					}
 					else
 					{
-						Log("Config error: Invalid frequency, setting to 0.");
+						Log.Info("Config error: Invalid frequency, setting to 0.");
 					}
 				}
 			}
 			else
 			{
-				Log("Config error: Invalid method.");
+				Log.Info("Config error: Invalid method.");
 			}
 		}
 

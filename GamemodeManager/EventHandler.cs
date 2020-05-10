@@ -9,10 +9,6 @@ namespace GamemodeManager
 {
 	class EventHandler
 	{
-		// TODO:
-		// Reload EXILED config instead of main game config
-		// Ensure config swapping works as intended (briefly touched this, not fully done or checked over)
-
 		private Random rand = new Random();
 
 		private bool isVoting = false;
@@ -117,7 +113,7 @@ namespace GamemodeManager
 							if (indx.Count > 0) foreach (int a in indx) newConfig[a] = line;
 							else newConfig.Add(line);
 						}
-						GamemodeManager.Log($"Loading config '{config}' for gamemode {GamemodeManager.CurrentMode.getName}...");
+						Log.Info($"Loading config '{config}' for gamemode {GamemodeManager.CurrentMode.getName}...");
 						GamemodeManager.ReloadConfig(newConfig.ToArray());
 					}
 				}
@@ -127,7 +123,7 @@ namespace GamemodeManager
 				GamemodeManager.CurrentMode = null;
 				if (GamemodeManager.LastMode != null)
 				{
-					GamemodeManager.Log("Loading default config...");
+					Log.Info("Loading default config...");
 					GamemodeManager.ReloadConfig(GamemodeManager.DefaultConfigData);
 				}
 			}
@@ -359,7 +355,7 @@ namespace GamemodeManager
 							{
 								GamemodeManager.methodFreq = 0;
 							}
-							ev.Sender.RAMessage($"Set gamemode method to {cmd}{(freq != 0 ? $" with frequency {freq}" : string.Empty)}.", true);
+							ev.Sender.RAMessage($"Set gamemode method to {cmd2}{(freq != 0 ? $" with frequency {freq}" : string.Empty)}.", true);
 							break;
 						}
 					case "RELOAD":
