@@ -11,8 +11,8 @@ namespace GamemodeManager
 
 		internal static void Reload()
 		{
-			isGlobalConfigs = Plugin.Config.GetBool("gm_global_gamemode_configs");
-			isVoteRepeat = Plugin.Config.GetBool("gm_vote_repeat");
+			isGlobalConfigs = Plugin.Config.GetBool("gm_global_gamemode_configs", true);
+			isVoteRepeat = Plugin.Config.GetBool("gm_vote_repeat", false);
 
 			defaultMode = Plugin.Config.GetString("gm_default_mode");
 		}
