@@ -8,10 +8,12 @@ namespace GamemodeManager
 {
 	public abstract class GamemodeManager
 	{
-		public static Dictionary<Plugin, string> ModeList = new Dictionary<Plugin, string>();
-		public static Dictionary<Plugin, string> ShuffledList = new Dictionary<Plugin, string>();
+		internal static Dictionary<Plugin, string> ModeList = new Dictionary<Plugin, string>();
+		internal static Dictionary<Plugin, string> ShuffledList = new Dictionary<Plugin, string>();
 
 		private static Random rand = new Random();
+
+		// API Access
 
 		public static void RegisterMode(Plugin gamemode, string config = null)
 		{

@@ -29,7 +29,7 @@ namespace GamemodeManager
 				"VOTE - Prompts all players to vote for the next gamemode at the end of the round.\n" +
 				"PERSIST - Keeps the current or next gamemode running until turned off.";
 
-		public List<int> GetIndexStartingWith(List<string> values, string val)
+		private List<int> GetIndexStartingWith(List<string> values, string val)
 		{
 			List<int> indxs = new List<int>();
 			for (int i = 0; i < values.Count; i++)
@@ -39,12 +39,12 @@ namespace GamemodeManager
 			return indxs;
 		}
 
-		public void OnRoundStart()
+		internal void OnRoundStart()
 		{
 			isRoundStarted = true;
 		}
 
-		public void OnRoundRestart()
+		internal void OnRoundRestart()
 		{
 			isRoundRestarting = true;
 			if (GamemodeManager.CurrentMode != null) GamemodeManager.LastGamemode = GamemodeManager.CurrentMode;
@@ -129,7 +129,7 @@ namespace GamemodeManager
 			}
 		}
 
-		public void OnRoundEnd()
+		internal void OnRoundEnd()
 		{
 			if (GamemodeManager.CurrentMode != null) GamemodeManager.LastGamemode = GamemodeManager.CurrentMode;
 
@@ -153,7 +153,7 @@ namespace GamemodeManager
 			}
 		}
 
-		public void OnConsoleCommand(ConsoleCommandEvent ev)
+		internal void OnConsoleCommand(ConsoleCommandEvent ev)
 		{
 			if (ev.Command.StartsWith("gm"))
 			{
@@ -198,7 +198,7 @@ namespace GamemodeManager
 			}
 		}
 
-		public void OnWaitingForPlayers()
+		internal void OnWaitingForPlayers()
 		{
 			Configs.Reload();
 
@@ -212,7 +212,7 @@ namespace GamemodeManager
 			}
 		}
 
-		public void OnPlayerJoin(PlayerJoinEvent ev)
+		internal void OnPlayerJoin(PlayerJoinEvent ev)
 		{
 			if (GamemodeManager.method == GamemodeManager.ChoosingMethod.VOTE && GamemodeManager.CurrentMode != null && !isRoundStarted)
 			{
@@ -220,7 +220,7 @@ namespace GamemodeManager
 			}
 		}
 
-		public void OnRACommand(ref RACommandEvent ev)
+		internal void OnRACommand(ref RACommandEvent ev)
 		{
 			string cmd = ev.Command.ToLower();
 			if (cmd.StartsWith("gm"))
