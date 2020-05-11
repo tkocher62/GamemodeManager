@@ -226,7 +226,6 @@ namespace GamemodeManager
 			if (cmd.StartsWith("gm"))
 			{
 				ev.Allow = false;
-				//ReferenceHub sender = Player.GetPlayer(ev.Sender.SenderId);
 				string[] args = cmd.Replace("gm", "").Trim().Split(' ');
 				if (args.Length == 0 || args == null)
 				{
