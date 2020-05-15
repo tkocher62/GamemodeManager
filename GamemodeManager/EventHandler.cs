@@ -322,7 +322,7 @@ namespace GamemodeManager
 								default:
 									{
 										ev.Sender.RAMessage("Unknown gamemode method.", false);
-										break;
+										return;
 									}
 							}
 
