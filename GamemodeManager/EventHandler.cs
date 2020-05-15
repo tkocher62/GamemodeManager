@@ -117,6 +117,11 @@ namespace GamemodeManager
 						GamemodeManager.ReloadConfig(newConfig.ToArray());
 					}
 				}
+				else
+				{
+					Log.Info($"Config for gamemode {GamemodeManager.CurrentMode.getName} not found, loading default config...");
+					GamemodeManager.ReloadConfig(GamemodeManager.DefaultConfigData);
+				}
 			}
 			else
 			{
