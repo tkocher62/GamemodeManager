@@ -241,11 +241,13 @@ namespace GamemodeManager
 				{
 					case "LIST":
 						{
-							string s = "Registered Gamemodes:\n - Standard (standard)\n";
+							string s = "Registered Gamemodes:\n - Standard\n";
+							bool config = false;
+							if (args.Length == 2 && args[1].ToUpper() == "CONFIG") config = true;
 							for (int i = 0; i < GamemodeManager.ModeList.Count; i++)
-							{
+							{ 
 								Plugin gm = GamemodeManager.ModeList.ElementAt(i).Key;
-								s += $" - {gm.getName}";
+								s += $" - {gm.getName} {(config ? $"({GamemodeManager.ModeList[gm] ?? "No Config Loaded"})" : "")}";
 								if (i < GamemodeManager.ModeList.Count - 1) s += "\n";
 							}
 							ev.Sender.RAMessage(s, true);
