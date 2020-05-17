@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using EXILED.Extensions;
+using MEC;
 
 namespace GamemodeManager
 {
@@ -206,7 +207,6 @@ namespace GamemodeManager
 		internal void OnWaitingForPlayers()
 		{
 			Configs.Reload();
-
 			GamemodeManager.SetupDirectories();
 			isRoundRestarting = false;
 
@@ -221,7 +221,7 @@ namespace GamemodeManager
 		{
 			if (GamemodeManager.method == GamemodeManager.ChoosingMethod.VOTE && GamemodeManager.CurrentMode != null && !isRoundStarted)
 			{
-				ev.Player.BroadcastMessage($"<b>Winning Gamemode</b>\n{GamemodeManager.CurrentMode.getName}", 5);
+				ev.Player.Broadcast(5, $"<b>Winning Gamemode</b>\n{GamemodeManager.CurrentMode.getName}", false);
 			}
 		}
 
