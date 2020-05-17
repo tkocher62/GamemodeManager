@@ -142,7 +142,7 @@ namespace GamemodeManager
 			if (GamemodeManager.method == GamemodeManager.ChoosingMethod.VOTE && GamemodeManager.methodFreq == GamemodeManager.freqCount && !isRoundRestarting)
 			{
 				Map.Broadcast("<b>Gamemode Voting</b>\n<i>Press [`] or [~] to open your console to vote for the gamemode for next round!</i>", 30, false);
-				string s = "Type '.gm number' to vote for the gamemode you want to play!\n";
+				string s = "Type '.gm number' to vote for the gamemode you want to play! You can change your vote by voting several times.\n";
 				for (int i = 1; i <= GamemodeManager.ModeList.Count; i++)
 				{
 					Plugin gm = GamemodeManager.ModeList.ElementAt(i - 1).Key;
