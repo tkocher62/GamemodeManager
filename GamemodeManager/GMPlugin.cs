@@ -1,4 +1,5 @@
 ﻿using EXILED;
+using Harmony;
 
 namespace GamemodeManager
 {
@@ -8,6 +9,8 @@ namespace GamemodeManager
 
 		public override void OnEnable()
 		{
+			HarmonyInstance.Create($"cyanox.gamemodemanager").PatchAll();
+
 			ev = new EventHandler();
 
 			Events.RoundRestartEvent += ev.OnRoundRestart;
