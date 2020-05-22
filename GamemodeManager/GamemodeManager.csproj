@@ -71,6 +71,7 @@
     <Compile Include="EventHandler.cs" />
     <Compile Include="GamemodeManager.cs" />
     <Compile Include="GMPlugin.cs" />
+    <Compile Include="Patches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
