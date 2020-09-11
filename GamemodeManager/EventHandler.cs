@@ -113,7 +113,7 @@ namespace GamemodeManager
 						else newConfig.Add(line);
 					}
 					Log.Info($"Loading config '{config}' for gamemode {GamemodeManager.CurrentMode.Name}...");
-					GamemodeManager.WriteConfig(newConfig.ToArray());
+					GamemodeManager.ReloadConfig(newConfig.ToArray());
 				}
 			}
 			else
@@ -122,7 +122,7 @@ namespace GamemodeManager
 				if (GamemodeManager.LastMode != null)
 				{
 					Log.Info("Loading default config...");
-					GamemodeManager.WriteConfig(GamemodeManager.DefaultConfigData);
+					GamemodeManager.ReloadConfig(GamemodeManager.DefaultConfigData);
 				}
 			}
 		}

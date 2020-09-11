@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 using Exiled.API.Interfaces;
 using System.Reflection;
+using Exiled.Loader;
 
 namespace GamemodeManager
 {
@@ -67,7 +68,11 @@ namespace GamemodeManager
 			return null;
 		}
 
-		//internal static void ReloadConfig(string data) => WriteConfig(data);
+		internal static void ReloadConfig(string[] data)
+		{
+			WriteConfig(data);
+			ConfigManager.Reload()
+		}
 
 		internal static void ReloadDefaultConfig()
 		{
