@@ -1,13 +1,13 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 
 namespace GamemodeManager
 {
 	[HarmonyPatch(typeof(CharacterClassManager), "LaterJoinPossible")]
 	class LaterJoinPatch
 	{
-		public static void Postfix(bool __result)
+		public static void Postfix(ref bool __result)
 		{
-			__result = __result == true ? Configs.isLaterJoin : false;
+			__result = __result == true ? GMPlugin.instance.Config.LaterJoin : false;
 		}
 	}
 }
