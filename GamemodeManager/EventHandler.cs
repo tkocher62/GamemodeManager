@@ -108,9 +108,44 @@ namespace GamemodeManager
 					for (int i = 0; i < overrideConfig.Count; i++)
 					{
 						string line = overrideConfig[i];
-						List<int> indx = GetIndexStartingWith(newConfig, line.Split(':')[0]);
-						if (indx.Count > 0) foreach (int a in indx) newConfig[a] = line;
-						else newConfig.Add(line);
+						if (!line.Contains("  ") && line.Length > 0 && line.Trim()[0] != '#')
+						{
+							Log.Warn(line);
+							int rIndx = newConfig.FindIndex(x => x == line) + 1;
+							int reIndx = 0;
+							for (int a = rIndx; a < newConfig.Count; a++)
+							{
+								string header = newConfig[a];
+								if (header.Length > 0)
+								{
+									if (header.Contains("  ")) reIndx++;
+									else if (header.Trim()[0] != '#') break;
+								}
+							}
+							if (rIndx != -1 && reIndx != 0)
+							{
+								reIndx += rIndx;
+								List<string> newLines = new List<string>();
+								for (int a = i + 1; a < overrideConfig.Count; a++)
+								{
+									line = overrideConfig[a];
+									if (line.Contains("  ") && line.Length > 0 && line.Trim()[0] != '#')
+									{
+										newLines.Add(line);
+									}
+								}
+								for (int a = 0; a < newLines.Count; a++)
+								{
+									for (int j = rIndx; j <= reIndx; j++)
+									{
+										if (newLines[a].Trim().Split(':')[0] == newConfig[j].Trim().Split(':')[0])
+										{
+											newConfig[j] = newLines[a];
+										}
+									}
+								}
+							}
+						}
 					}
 					Log.Info($"Loading config '{config}' for gamemode {GamemodeManager.CurrentMode.Name}...");
 					GamemodeManager.ReloadConfig(newConfig.ToArray());

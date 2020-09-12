@@ -71,7 +71,7 @@ namespace GamemodeManager
 		internal static void ReloadConfig(string[] data)
 		{
 			WriteConfig(data);
-			ConfigManager.Reload();
+			//ConfigManager.Reload();
 		}
 
 		internal static void ReloadDefaultConfig()

@@ -1,9 +1,5 @@
 ﻿using Exiled.API.Features;
 using HarmonyLib;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.IO;
-using YamlDotNet.Serialization;
 
 namespace GamemodeManager
 {
