@@ -5,7 +5,6 @@ using System.Linq;
 using System;
 using Exiled.API.Interfaces;
 using System.Reflection;
-using Exiled.Loader;
 
 namespace GamemodeManager
 {
@@ -64,7 +63,10 @@ namespace GamemodeManager
 					}
 				}
 			}
-			catch { }
+			catch (Exception x)
+			{
+				Log.Error($"Failed to convert assembly {plugin.FullName} to IPlugin. Error: {x.Message}");
+			}
 			return null;
 		}
 
