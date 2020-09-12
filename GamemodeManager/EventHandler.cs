@@ -30,21 +30,6 @@ namespace GamemodeManager
 				"VOTE - Prompts all players to vote for the next gamemode at the end of the round.\n" +
 				"PERSIST - Keeps the current or next gamemode running until turned off.";
 
-		private List<int> GetIndexStartingWith(List<string> values, string val)
-		{
-			List<int> indxs = new List<int>();
-			for (int i = 0; i < values.Count; i++)
-			{
-				// todo: make this this is per plugin somehow
-				if (values[i].StartsWith(val))
-				{
-					indxs.Add(i);
-					Log.Warn(i);
-				}
-			}
-			return indxs;
-		}
-
 		internal void OnRoundRestart()
 		{
 			isRoundRestarting = true;
@@ -110,7 +95,6 @@ namespace GamemodeManager
 						string line = overrideConfig[i];
 						if (!line.Contains("  ") && line.Length > 0 && line.Trim()[0] != '#')
 						{
-							Log.Warn(line);
 							int rIndx = newConfig.FindIndex(x => x == line) + 1;
 							int reIndx = 0;
 							for (int a = rIndx; a < newConfig.Count; a++)
