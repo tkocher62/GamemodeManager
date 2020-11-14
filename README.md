@@ -8,7 +8,7 @@ When the server starts, the plugin will load all other special modes into its me
 ![](https://github.com/tkocher62/GamemodeManager/blob/exiled/images/loaded.png)
 
 ### Commands
-Upon running the main command, you are greeted with a lot of customizability and options.
+Upon running the main command, you are greeted with a lot of customization and options.
 
 ![](https://github.com/tkocher62/GamemodeManager/blob/exiled/images/output.png)
 
@@ -24,6 +24,6 @@ For more automated usage, the plugin comes with several modes. For instance, the
 
 ![](https://github.com/tkocher62/GamemodeManager/blob/exiled/images/setmode.png)
 
-Finally, when the round restarts and a gamemode loads, it loads the custom made config file for that gamemode. This overrwites the server config to modify values and disable anything that may interfere with the gamemode.
+Finally, when the round restarts and a gamemode loads, it loads the custom made config file for that gamemode. This overwrites the server config to modify values and disable anything that may interfere with the gamemode.
 
 ![](https://github.com/tkocher62/GamemodeManager/blob/exiled/images/loading%20config.png)
